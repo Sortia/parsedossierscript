@@ -1,0 +1,17 @@
+{
+  "name": "parsedossierscript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ssortia",
+  "license": "ISC",
+  "dependencies": {
+    "mime-types": "^2.1.34",
+    "mmmagic": "^0.5.3",
+    "node-poppler": "^5.1.3",
+    "uuid": "^8.3.2"
+  }
+}
