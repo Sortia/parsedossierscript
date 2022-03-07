@@ -37,20 +37,26 @@ const tempPath = 'documents/temp';
 const POPPLER_BIN_PATH = '/usr/bin';
 
 fs.readdir(dossierPath, (err, files) => {
+    if (err) throw err;
+
     files.forEach(uuid => {
         fs.readdir(`${dossierPath}/${uuid}`, (err, files) => {
+            if (err) throw err;
+
             files.forEach(type => {
-                fs.readdir(`${dossierPath}/${uuid}/${type}`, async (err, files) => {
+                fs.readdir(`${dossierPath}/${uuid}/${type}`, (err, files) => {
+                    if (err) throw err;
+
                     const lastVersion = Math.max(...files);
 
-                    await processDocument(uuid, type, lastVersion);
+                    processDocument(uuid, type, lastVersion);
                 });
             });
         });
     });
 });
 
-async function processDocument(uuid, type, lastVersion) {
+function processDocument(uuid, type, lastVersion) {
     const oldFilePath = `${dossierPath}/${uuid}/${type}/${lastVersion}/${type}`;
     const newFolderPath = `${classifierPath}/${uuid}/${types[type]}`;
 
@@ -58,16 +64,16 @@ async function processDocument(uuid, type, lastVersion) {
         fs.mkdirSync(newFolderPath, { recursive: true });
     }
 
-    return magic.detectFile(oldFilePath, async (err, result) => {
+    magic.detectFile(oldFilePath, (err, result) => {
         if (err) throw err;
 
-        await copyFile(result, oldFilePath, newFolderPath, uuid, type);
+        copyFile(result, oldFilePath, newFolderPath, uuid, type);
     });
 }
 
-async function copyFile(mimeType, oldFilePath, newFolderPath, uuid, type) {
+function copyFile(mimeType, oldFilePath, newFolderPath, uuid, type) {
     if (mimeType === 'application/pdf') {
-        await splitPdf(oldFilePath, uuid, type).then((pages) => {
+        splitPdf(oldFilePath, uuid, type).then((pages) => {
             pages.map((pagePath, i) => {
                 fs.renameSync(pagePath, `${newFolderPath}/${i + 1}#${uuidv4()}.jpg`);
             })
